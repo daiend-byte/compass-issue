@@ -41,7 +41,7 @@ export function FacilitatorListPage() {
         ) : null}
       </main>
 
-      {isLoading && <CenteredLoader />}
+      {(isLoading || isFetching) && <CenteredLoader />}
       <ErrorDialog open={isError} onRetry={() => void refetch()} />
     </div>
   );
