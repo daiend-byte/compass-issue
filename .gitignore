@@ -1,4 +1,5 @@
 node_modules
+.tanstack
 dist
 dist-ssr
 *.local
