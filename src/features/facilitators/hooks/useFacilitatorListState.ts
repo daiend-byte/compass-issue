@@ -42,7 +42,7 @@ export function useFacilitatorListState(): FacilitatorListState {
   }, [debouncedSearch, navigate]);
 
   const setSearchInput = (value: string) => {
-    navigate({ search: (prev) => ({ ...prev, search: value }), replace: true });
+    navigate({ search: (prev) => ({ ...prev, search: value || undefined }), replace: true });
   };
 
   const toggleSort = (key: SortKey) => {
