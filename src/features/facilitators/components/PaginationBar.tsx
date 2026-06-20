@@ -23,7 +23,7 @@ export function PaginationBar({ page, totalCount, onPageChange }: PaginationBarP
 
   return (
     <div className="flex items-center justify-between">
-      <p className="font-light text-sm text-ink">
+      <p className="font-light text-xs text-ink">
         {totalCount}件中 {start}〜{end}件を表示
       </p>
       <nav className="flex items-center gap-1" aria-label="ページネーション">
