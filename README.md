@@ -98,7 +98,7 @@ main.tsx
   → フックが useSearch で読み出して UI に反映
 ```
 
-URL を Single Source of Truth にする理由
+#### URL を Single Source of Truth にする理由
 
 - ブラウザバック/フォワードで状態が復元される
 - URL をコピーして共有できる

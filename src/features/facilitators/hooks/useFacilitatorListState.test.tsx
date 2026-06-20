@@ -6,7 +6,7 @@ import {
   createRouter,
 } from '@tanstack/react-router';
 import { act, render } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { facilitatorsSearchSchema } from '@/router';
 import { SEARCH_DEBOUNCE_MS } from '../constants';
 import { useFacilitatorListState, type FacilitatorListState } from './useFacilitatorListState';
