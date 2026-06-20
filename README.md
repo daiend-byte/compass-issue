@@ -56,15 +56,15 @@ src/
 
 ### 技術スタック
 
-| 役割 | ライブラリ |
-|------|-----------|
-| UI フレームワーク | React 19 |
-| ビルドツール | Vite |
-| ルーティング | TanStack Router（ファイルベース） |
-| サーバ状態管理 | TanStack Query |
-| スキーマ検証 | Zod |
-| スタイリング | Tailwind CSS + shadcn/ui |
-| テスト | Vitest + Testing Library + MSW |
+| 役割 | ライブラリ | 採用理由 |
+|------|-----------|---------|
+| UI フレームワーク | React 19 | React Compiler（自動再描画最適化）に対応した最新安定版。手動 `memo` を削減できる |
+| ビルドツール | Vite | ネイティブ ES モジュールによる高速 HMR。React + TypeScript の標準的な構成と親和性が高い |
+| ルーティング | TanStack Router | search params を Zod スキーマで型安全に検証できる。TanStack Query と同エコシステムで統一し学習コストを下げる。将来ページが増えた際もファイルベースのルート定義により見通しを保てる |
+| サーバ状態管理 | TanStack Query | キャッシュ・再取得・ローディング状態を宣言的に管理。`keepPreviousData` でページ送り中のちらつきを防ぐ |
+| スキーマ検証 | Zod | TypeScript の静的型と実行時バリデーションを一つのスキーマ定義で一元化できる |
+| スタイリング | Tailwind CSS + shadcn/ui | shadcn/ui はコードをリポジトリへ直接コピーする方式のため外部依存を持たず、デザインを完全に制御できる |
+| テスト | Vitest + Testing Library + MSW | MSW が実際の fetch パスをインターセプトするため、実装に近い条件で統合テストを書ける |
 
 ### レイヤー構成と責務
 
