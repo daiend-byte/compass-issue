@@ -1,0 +1,32 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* Zeplin デザインから採用したトークン */
+@theme {
+  --color-brand: #24473b;
+  --color-brand-light: #4f6c62;
+  --color-line: #e9eceb;
+  --color-surface: #f8f9f9;
+  --color-ink: #212423;
+  --color-subtle: #a7b5b1;
+  --color-border-row: #d3dad8;
+
+  --font-sans: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background-color: #ffffff;
+}
