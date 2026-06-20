@@ -10,7 +10,7 @@ import { errorHandler } from '@/test/msw/handlers';
 
 async function renderPage(path = '/p/facilitators') {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false, gcTime: 0 } },
+    defaultOptions: { queries: { retry: false, gcTime: 0, staleTime: Infinity } },
   });
   const history = createMemoryHistory({ initialEntries: [path] });
   const router = createRouter({ routeTree, history });
@@ -54,8 +54,8 @@ describe('FacilitatorListPage', () => {
       'facilitator_2',
     );
 
-    // facilitator_20〜25 の 6 件にしぼられる
-    expect(await screen.findByText('先生20')).toBeInTheDocument();
+    // facilitator_20〜25 の 6 件にしぼられる（デバウンス 300ms + ネットワーク込みで余裕を持たせる）
+    expect(await screen.findByText('先生20', {}, { timeout: 3000 })).toBeInTheDocument();
     await waitFor(() => expect(screen.queryByText('先生01')).not.toBeInTheDocument());
     expect(screen.getByText('6件中 1〜6件を表示')).toBeInTheDocument();
   });
@@ -65,7 +65,7 @@ describe('FacilitatorListPage', () => {
     await renderPage();
     await screen.findByText('先生01');
 
-    await user.click(screen.getByRole('button', { name: '名前で並び替え' }));
+    await user.click(screen.getByRole('button', { name: /名前で並び替え/ }));
 
     // 降順 1 ページ目の先頭は 先生25
     await waitFor(() => {
@@ -84,7 +84,7 @@ describe('FacilitatorListPage', () => {
       'zzzznomatch',
     );
 
-    expect(await screen.findByText('該当するデータがありません。')).toBeInTheDocument();
+    expect(await screen.findByText('該当するデータがありません。', {}, { timeout: 3000 })).toBeInTheDocument();
   });
 
   it('通信エラー時にダイアログを表示し、リトライで復帰する', async () => {

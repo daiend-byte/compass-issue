@@ -15,7 +15,7 @@ export function FacilitatorListPage() {
 
   const totalCount = data?.totalCount ?? 0;
   const facilitators = data?.data ?? [];
-  const showEmpty = !isLoading && !isError && totalCount === 0;
+  const showEmpty = !isLoading && !isFetching && !isError && totalCount === 0;
 
   return (
     <div className="min-h-full bg-white">
@@ -41,7 +41,7 @@ export function FacilitatorListPage() {
         ) : null}
       </main>
 
-      {isFetching && <CenteredLoader />}
+      {isLoading && <CenteredLoader />}
       <ErrorDialog open={isError} onRetry={() => void refetch()} />
     </div>
   );

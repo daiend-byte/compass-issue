@@ -16,7 +16,7 @@ export function FacilitatorTable({
   onToggleSort,
 }: FacilitatorTableProps) {
   return (
-    <table className="w-full table-fixed">
+    <table className="w-full table-fixed" aria-label="先生一覧">
       <colgroup>
         <col className="w-[36%]" />
         <col className="w-[36%]" />

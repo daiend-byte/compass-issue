@@ -16,8 +16,9 @@ export function PaginationBar({ page, totalCount, onPageChange }: PaginationBarP
   if (totalCount === 0) return null;
 
   const pageCount = Math.ceil(totalCount / PER_PAGE);
-  const start = (page - 1) * PER_PAGE + 1;
-  const end = Math.min(page * PER_PAGE, totalCount);
+  const safePage = Math.max(1, Math.min(page, pageCount));
+  const start = (safePage - 1) * PER_PAGE + 1;
+  const end = Math.min(safePage * PER_PAGE, totalCount);
   const pages = Array.from({ length: pageCount }, (_, index) => index + 1);
 
   return (
@@ -30,14 +31,14 @@ export function PaginationBar({ page, totalCount, onPageChange }: PaginationBarP
           variant="outline"
           size="icon"
           className={cn(subtleButton, 'w-12')}
-          disabled={page <= 1}
-          onClick={() => onPageChange(page - 1)}
+          disabled={safePage <= 1}
+          onClick={() => onPageChange(safePage - 1)}
           aria-label="前のページ"
         >
           <FontAwesomeIcon icon={faChevronLeft} aria-hidden />
         </Button>
         {pages.map((pageNumber) => {
-          const isCurrentPage = pageNumber === page;
+          const isCurrentPage = pageNumber === safePage;
           return (
             <Button
               key={pageNumber}
@@ -45,6 +46,7 @@ export function PaginationBar({ page, totalCount, onPageChange }: PaginationBarP
               size="icon"
               className={cn('h-6 w-6 text-xs', !isCurrentPage && subtleButton)}
               aria-current={isCurrentPage ? 'page' : undefined}
+              aria-label={`ページ ${pageNumber}`}
               onClick={() => onPageChange(pageNumber)}
             >
               {pageNumber}
@@ -55,8 +57,8 @@ export function PaginationBar({ page, totalCount, onPageChange }: PaginationBarP
           variant="outline"
           size="icon"
           className={cn(subtleButton, 'w-12')}
-          disabled={page >= pageCount}
-          onClick={() => onPageChange(page + 1)}
+          disabled={safePage >= pageCount}
+          onClick={() => onPageChange(safePage + 1)}
           aria-label="次のページ"
         >
           <FontAwesomeIcon icon={faChevronRight} aria-hidden />

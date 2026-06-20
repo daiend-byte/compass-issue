@@ -102,16 +102,14 @@ describe('useFacilitatorListState', () => {
   });
 
   describe('検索入力 → ページリセット（デバウンス後）', () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-    });
-
     afterEach(() => {
       vi.useRealTimers();
     });
 
     it('デバウンス前はページが変わらない', async () => {
+      // ルーター初期化が完了した後にフェイクタイマーを有効化する
       const result = await createHookTestSetup();
+      vi.useFakeTimers();
       await act(async () => {
         result.current?.setPage(3);
       });
@@ -126,6 +124,7 @@ describe('useFacilitatorListState', () => {
 
     it('デバウンス後に検索語が確定するとページが 1 に戻る', async () => {
       const result = await createHookTestSetup();
+      vi.useFakeTimers();
       await act(async () => {
         result.current?.setPage(3);
       });
@@ -141,6 +140,7 @@ describe('useFacilitatorListState', () => {
 
     it('検索語が空白のみの場合は query.search が空になる（trim 済み）', async () => {
       const result = await createHookTestSetup();
+      vi.useFakeTimers();
       await act(async () => {
         result.current?.setSearchInput('   ');
       });

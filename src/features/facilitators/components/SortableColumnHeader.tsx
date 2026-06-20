@@ -21,12 +21,12 @@ export function SortableColumnHeader({
   className,
 }: SortableColumnHeaderProps) {
   const isActive = activeKey === columnKey;
-  const icon = isActive && order === 'desc' ? faChevronUp : faChevronDown;
+  const icon = isActive && order === 'asc' ? faChevronUp : faChevronDown;
 
   return (
     <th
       scope="col"
-      aria-sort={isActive ? (order === 'asc' ? 'ascending' : 'descending') : 'none'}
+      aria-sort={isActive ? (order === 'asc' ? 'ascending' : 'descending') : undefined}
       className={cn(
         'p-0 text-left text-xs font-semibold text-white',
         isActive ? 'bg-brand' : 'bg-brand-light',
@@ -37,7 +37,7 @@ export function SortableColumnHeader({
         type="button"
         onClick={() => onToggle(columnKey)}
         className="flex w-full cursor-pointer items-center justify-between gap-1 px-4 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-        aria-label={`${label}で並び替え`}
+        aria-label={`${label}で並び替え${isActive ? `（${order === 'asc' ? '昇順' : '降順'}）` : ''}`}
       >
         <span>{label}</span>
         <FontAwesomeIcon

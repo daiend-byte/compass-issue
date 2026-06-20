@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { PER_PAGE, SEARCH_DEBOUNCE_MS } from '../constants';
+import { DEFAULT_ORDER, DEFAULT_SORT, PER_PAGE, SEARCH_DEBOUNCE_MS } from '../constants';
 import type { FacilitatorQuery, SortKey, SortOrder } from '../types';
 import { useDebouncedValue } from './useDebouncedValue';
 
@@ -23,8 +23,8 @@ export interface FacilitatorListState {
 export function useFacilitatorListState(): FacilitatorListState {
   const {
     search = '',
-    sort = 'name',
-    order = 'asc',
+    sort = DEFAULT_SORT,
+    order = DEFAULT_ORDER,
     page = 1,
   } = useSearch({ from: '/p/facilitators' });
   const navigate = useNavigate({ from: '/p/facilitators' });

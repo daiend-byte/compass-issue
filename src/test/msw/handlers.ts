@@ -14,7 +14,8 @@ const ENDPOINT = '*/api/facilitators';
 export const handlers = [
   http.get(ENDPOINT, ({ request }) => {
     const url = new URL(request.url);
-    const page = Number(url.searchParams.get('page') ?? '1');
+    const rawPage = Number(url.searchParams.get('page') ?? '1');
+    const page = Number.isFinite(rawPage) && rawPage >= 1 ? rawPage : 1;
     const limit = Number(url.searchParams.get('limit') ?? '20');
     const sort = url.searchParams.get('sort') === 'loginId' ? 'loginId' : 'name';
     const order = url.searchParams.get('order') === 'desc' ? 'desc' : 'asc';
