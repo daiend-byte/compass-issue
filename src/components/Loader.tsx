@@ -1,7 +1,7 @@
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export function CenteredLoader() {
+export function Loader() {
   return (
     <div
       className="fixed inset-0 z-40 grid place-items-center bg-white/60"

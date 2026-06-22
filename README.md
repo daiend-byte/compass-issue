@@ -5,7 +5,7 @@
 - Node.js 20 以上
 - パッケージマネージャ: pnpm
 
-## セットアップ・起動手順
+## セットアップと起動
 
 ```bash
 # 1. 依存関係のインストール
@@ -43,7 +43,7 @@ src/
   components/                    # 共通コンポーネント（ui のみサブディレクトリ）
     ui/                          # Button / Input / Dialog（shadcn 方式）
     Header.tsx / PageTitle.tsx
-    CenteredLoader.tsx / ErrorDialog.tsx
+    Loader.tsx / ErrorDialog.tsx
   features/facilitators/         # 先生一覧の機能モジュール
     types.ts / constants.ts / searchSchema.ts
     api/                         # schema.ts（Zod）/ facilitators.ts（取得）
@@ -56,15 +56,17 @@ src/
 
 ### 技術スタック
 
-| 役割 | ライブラリ | 採用理由 |
-|------|-----------|---------|
-| UI フレームワーク | React 19 | React Compiler（自動再描画最適化）に対応した最新安定版。手動 `memo` を削減できる |
-| ビルドツール | Vite | ネイティブ ES モジュールによる高速 HMR。React + TypeScript の標準的な構成と親和性が高い |
-| ルーティング | TanStack Router | search params を Zod スキーマで型安全に検証できる。TanStack Query と同エコシステムで統一し学習コストを下げる。将来ページが増えた際もファイルベースのルート定義により見通しを保てる |
-| サーバ状態管理 | TanStack Query | キャッシュ・再取得・ローディング状態を宣言的に管理。`keepPreviousData` でページ送り中のちらつきを防ぐ |
-| スキーマ検証 | Zod | TypeScript の静的型と実行時バリデーションを一つのスキーマ定義で一元化できる |
-| スタイリング | Tailwind CSS + shadcn/ui | shadcn/ui はコードをリポジトリへ直接コピーする方式のため外部依存を持たず、デザインを完全に制御できる |
-| テスト | Vitest + Testing Library + MSW | MSW が実際の fetch パスをインターセプトするため、実装に近い条件で統合テストを書ける |
+
+| 役割         | ライブラリ                          | 採用理由                                                                                                                   |
+| ---------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| UI フレームワーク | React 19                       | React Compilerに対応した最新安定版。手動 `memo` を削減できる                                                                              |
+| ビルドツール     | Vite                           | ネイティブ ES モジュールによる高速 HMR。React + TypeScript の標準的な構成と親和性が高い                                                              |
+| ルーティング     | TanStack Router                | search params を Zod スキーマで型安全に検証できる。TanStack Query と同エコシステムで統一し学習コストを下げる。実務を意識して導入しており、ページが増やす際もファイルベースのルート定義により見通しを保てる |
+| サーバ状態管理    | TanStack Query                 | キャッシュ、再取得、ローディング状態を宣言的に管理。`keepPreviousData` でページ送り中のちらつきを防ぐ                                                           |
+| スキーマ検証     | Zod                            | TypeScript の静的型と実行時バリデーションを一つのスキーマ定義で一元化できる                                                                            |
+| スタイリング     | Tailwind CSS + shadcn/ui       | shadcn/ui はコードをリポジトリへ直接コピーする方式のため外部依存を持たず、デザインを完全に制御できる                                                                |
+| テスト        | Vitest + Testing Library + MSW | MSW が実際の fetch パスをインターセプトするため、実装に近い条件で統合テストを書ける                                                                        |
+
 
 ### レイヤー構成と責務
 
@@ -80,7 +82,7 @@ main.tsx
 ```
 
 - `routes/` はルート定義のみを持ち、実装は `features/` に委譲する
-- `lib/` には複数の機能をまたぐ共通部品（fetch ラッパ・QueryClient・ユーティリティ）を置く
+- `lib/` には複数の機能をまたぐ共通部品（fetch ラッパ、QueryClient、ユーティリティ）を置く
 - `components/` には機能に依存しない共通 UI を置く
 
 ### 状態管理の設計
@@ -89,7 +91,7 @@ main.tsx
 
 #### UI 状態 → URL search params（`useFacilitatorListState`）
 
-検索語・ソートキー・ソート方向・ページ番号をすべて URL に持たせる。
+検索語、ソートキー、ソート方向、ページ番号をすべて URL に持たせる。
 
 ```
 ユーザ操作（検索・ソート・ページ送り）
@@ -102,11 +104,12 @@ main.tsx
 
 - ブラウザバック/フォワードで状態が復元される
 - URL をコピーして共有できる
-- コンポーネントをまたいで `どの状態か` を props で渡す必要がない
+- コンポーネントをまたいで「どの状態か」を props で渡す必要がない
 
 URL は TanStack Router の `validateSearch`（Zod スキーマ）で検証され、不正な値は安全なデフォルト（`.catch(undefined)`）に落ちる。
 
-検索語の変化はデバウンス後にページを 1 にリセットする。ソート変更時もページを同じ `navigate` 呼び出しでリセットし、余分な API リクエストを防いでいる。
+検索語の変化はデバウンス後にページを 1 にリセットする。
+ソート変更時もページを同じ `navigate` 呼び出しでリセットし、余分な API リクエストを防いでいる。
 
 #### サーバ状態 → TanStack Query（`useFacilitators`）
 
@@ -130,7 +133,8 @@ URL search params
 
 ### エラーハンドリング
 
-`lib/http.ts` の `getJson` はネットワーク障害・非 2xx・Zod パース失敗をすべて `ApiError` に統一する。`useFacilitators` が `isError` を返したとき `FacilitatorListPage` が `ErrorDialog` を開き、ユーザがリトライできる。
+`lib/http.ts` の `getJson` はネットワーク障害、非 2xx、Zod パース失敗をすべて `ApiError` に統一する。
+`useFacilitators` が `isError` を返したとき `FacilitatorListPage` が `ErrorDialog` を開き、ユーザがリトライできる。
 
 ## テスト
 
@@ -138,6 +142,6 @@ URL search params
 pnpm test
 ```
 
-- 単体: URL 組み立て（空検索の除外）、Zod パース失敗時の挙動、UI 状態（ソート切替・ページリセット）。
-- 結合（MSW で API をモック）: 読み込み→一覧表示、ページ送り、部分一致検索、ソート、空表示、
-通信エラー→ダイアログ→リトライ復帰。
+- 単体: URL 組み立て（空検索の除外）、Zod パース失敗時の挙動、UI 状態（ソート切替とページリセット）。
+- 結合（MSW で API をモック）: 読み込み→一覧表示、ページ送り、部分一致検索、ソート、空表示、通信エラー→ダイアログ→リトライ復帰。
+

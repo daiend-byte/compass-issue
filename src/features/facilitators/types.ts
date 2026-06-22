@@ -3,7 +3,7 @@ export type { Facilitator, FacilitatorsResponse as FacilitatorsResult } from './
 export type SortKey = 'name' | 'loginId';
 export type SortOrder = 'asc' | 'desc';
 
-/** API へ送るクエリ条件。 */
+/** API へ送るクエリパラメータ。 */
 export interface FacilitatorQuery {
   page: number;
   limit: number;

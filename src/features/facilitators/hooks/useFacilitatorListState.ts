@@ -5,7 +5,7 @@ import type { FacilitatorQuery, SortKey, SortOrder } from '../types';
 import { useDebouncedValue } from './useDebouncedValue';
 
 export interface FacilitatorListState {
-  /** API へ渡すクエリ条件。 */
+  /** API へ渡すクエリパラメータ。 */
   query: FacilitatorQuery;
   searchInput: string;
   setSearchInput: (value: string) => void;

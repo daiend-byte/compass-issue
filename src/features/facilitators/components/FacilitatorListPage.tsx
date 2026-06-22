@@ -1,4 +1,4 @@
-import { CenteredLoader } from '@/components/CenteredLoader';
+import { Loader } from '@/components/Loader';
 import { ErrorDialog } from '@/components/ErrorDialog';
 import { Header } from '@/components/Header';
 import { PageTitle } from '@/components/PageTitle';
@@ -41,7 +41,7 @@ export function FacilitatorListPage() {
         ) : null}
       </main>
 
-      {(isLoading || isFetching) && <CenteredLoader />}
+      {(isLoading || isFetching) && <Loader />}
       <ErrorDialog open={isError} onRetry={() => void refetch()} />
     </div>
   );
