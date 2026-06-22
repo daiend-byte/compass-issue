@@ -47,7 +47,7 @@ src/
   features/facilitators/         # 先生一覧の機能モジュール
     types.ts / constants.ts / searchSchema.ts
     api/                         # schema.ts（Zod）/ facilitators.ts（取得）
-    hooks/                       # useFacilitators / useFacilitatorListState / useDebouncedValue
+    hooks/                       # useFacilitators / useFacilitatorListState
     components/                  # 画面・テーブル・行・検索・ソートヘッダ・ページャ・空表示
   test/                          # setup / MSW ハンドラ / 描画ヘルパ
 ```
@@ -56,17 +56,15 @@ src/
 
 ### 技術スタック
 
-
-| 役割         | ライブラリ                          | 採用理由                                                                                                                   |
-| ---------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| UI フレームワーク | React 19                       | React Compilerに対応した最新安定版。手動 `memo` を削減できる                                                                              |
-| ビルドツール     | Vite                           | ネイティブ ES モジュールによる高速 HMR。React + TypeScript の標準的な構成と親和性が高い                                                              |
-| ルーティング     | TanStack Router                | search params を Zod スキーマで型安全に検証できる。TanStack Query と同エコシステムで統一し学習コストを下げる。実務を意識して導入しており、ページが増やす際もファイルベースのルート定義により見通しを保てる |
-| サーバ状態管理    | TanStack Query                 | キャッシュ、再取得、ローディング状態を宣言的に管理。`keepPreviousData` でページ送り中のちらつきを防ぐ                                                           |
-| スキーマ検証     | Zod                            | TypeScript の静的型と実行時バリデーションを一つのスキーマ定義で一元化できる                                                                            |
-| スタイリング     | Tailwind CSS + shadcn/ui       | shadcn/ui はコードをリポジトリへ直接コピーする方式のため外部依存を持たず、デザインを完全に制御できる                                                                |
-| テスト        | Vitest + Testing Library + MSW | MSW が実際の fetch パスをインターセプトするため、実装に近い条件で統合テストを書ける                                                                        |
-
+| 役割              | ライブラリ                     | 採用理由                                                                                                                                                                                                   |
+| ----------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UI フレームワーク | React 19                       | React Compilerに対応した最新安定版。手動 `memo` を削減できる                                                                                                                                               |
+| ビルドツール      | Vite                           | ネイティブ ES モジュールによる高速 HMR。React + TypeScript の標準的な構成と親和性が高い                                                                                                                    |
+| ルーティング      | TanStack Router                | search params を Zod スキーマで型安全に検証できる。TanStack Query と同エコシステムで統一し学習コストを下げる。実務を意識して導入しており、ページが増やす際もファイルベースのルート定義により見通しを保てる |
+| サーバ状態管理    | TanStack Query                 | キャッシュ、再取得、ローディング状態を宣言的に管理。`keepPreviousData` でページ送り中のちらつきを防ぐ                                                                                                      |
+| スキーマ検証      | Zod                            | TypeScript の静的型と実行時バリデーションを一つのスキーマ定義で一元化できる                                                                                                                                |
+| スタイリング      | Tailwind CSS + shadcn/ui       | shadcn/ui はコードをリポジトリへ直接コピーする方式のため外部依存を持たず、デザインを完全に制御できる                                                                                                       |
+| テスト            | Vitest + Testing Library + MSW | MSW が実際の fetch パスをインターセプトするため、実装に近い条件で統合テストを書ける                                                                                                                        |
 
 ### レイヤー構成と責務
 
@@ -108,14 +106,14 @@ main.tsx
 
 URL は TanStack Router の `validateSearch`（Zod スキーマ）で検証され、不正な値は安全なデフォルト（`.catch(undefined)`）に落ちる。
 
-検索語の変化はデバウンス後にページを 1 にリセットする。
+検索語は Enter 確定時に URL へコミットされ、ページを 1 に同時リセットする。
 ソート変更時もページを同じ `navigate` 呼び出しでリセットし、余分な API リクエストを防いでいる。
 
 #### サーバ状態 → TanStack Query（`useFacilitators`）
 
 ```typescript
-queryKey: ['facilitators', query]  // クエリ条件が変わると自動で再取得
-placeholderData: keepPreviousData  // 再取得中は前ページのデータを維持してちらつきを防ぐ
+queryKey: ['facilitators', query]; // クエリ条件が変わると自動で再取得
+placeholderData: keepPreviousData; // 再取得中は前ページのデータを維持してちらつきを防ぐ
 ```
 
 ### データフロー
@@ -144,4 +142,3 @@ pnpm test
 
 - 単体: URL 組み立て（空検索の除外）、Zod パース失敗時の挙動、UI 状態（ソート切替とページリセット）。
 - 結合（MSW で API をモック）: 読み込み→一覧表示、ページ送り、部分一致検索、ソート、空表示、通信エラー→ダイアログ→リトライ復帰。
-

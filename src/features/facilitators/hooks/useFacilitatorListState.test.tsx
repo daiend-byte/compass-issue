@@ -6,9 +6,8 @@ import {
   createRouter,
 } from '@tanstack/react-router';
 import { act, render } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { facilitatorsSearchSchema } from '@/router';
-import { SEARCH_DEBOUNCE_MS } from '../constants';
 import { useFacilitatorListState, type FacilitatorListState } from './useFacilitatorListState';
 
 /**
@@ -101,51 +100,24 @@ describe('useFacilitatorListState', () => {
     expect(result.current?.page).toBe(1);
   });
 
-  describe('検索入力 → ページリセット（デバウンス後）', () => {
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it('デバウンス前はページが変わらない', async () => {
-      // ルーター初期化が完了した後にフェイクタイマーを有効化する
+  describe('検索入力', () => {
+    it('setSearchInput を呼ぶと search と page=1 が即座に反映される', async () => {
       const result = await createHookTestSetup();
-      vi.useFakeTimers();
       await act(async () => {
         result.current?.setPage(3);
       });
-      await act(async () => {
-        result.current?.setSearchInput('tanaka');
-      });
-      // デバウンス未経過のためページはまだ 3
       expect(result.current?.page).toBe(3);
-      // API クエリの search もまだ空
-      expect(result.current?.query.search).toBe('');
-    });
-
-    it('デバウンス後に検索語が確定するとページが 1 に戻る', async () => {
-      const result = await createHookTestSetup();
-      vi.useFakeTimers();
-      await act(async () => {
-        result.current?.setPage(3);
-      });
       await act(async () => {
         result.current?.setSearchInput('tanaka');
       });
-      await act(async () => {
-        vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS);
-      });
-      expect(result.current?.page).toBe(1);
       expect(result.current?.query.search).toBe('tanaka');
+      expect(result.current?.page).toBe(1);
     });
 
     it('検索語が空白のみの場合は query.search が空になる（trim 済み）', async () => {
       const result = await createHookTestSetup();
-      vi.useFakeTimers();
       await act(async () => {
         result.current?.setSearchInput('   ');
-      });
-      await act(async () => {
-        vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS);
       });
       expect(result.current?.query.search).toBe('');
     });

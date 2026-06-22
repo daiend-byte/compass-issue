@@ -1,8 +1,6 @@
-import { useEffect, useRef } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { DEFAULT_ORDER, DEFAULT_SORT, PER_PAGE, SEARCH_DEBOUNCE_MS } from '../constants';
+import { DEFAULT_ORDER, DEFAULT_SORT, PER_PAGE } from '../constants';
 import type { FacilitatorQuery, SortKey, SortOrder } from '../types';
-import { useDebouncedValue } from './useDebouncedValue';
 
 export interface FacilitatorListState {
   /** API へ渡すクエリパラメータ。 */
@@ -29,20 +27,10 @@ export function useFacilitatorListState(): FacilitatorListState {
   } = useSearch({ from: '/p/facilitators' });
   const navigate = useNavigate({ from: '/p/facilitators' });
 
-  // API 呼び出しをデバウンス。trim して空白のみの検索語を除外。
-  const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
-
-  // 検索語デバウンス後にページを 1 にリセット。
-  // prev ref で実際の値変化のみ検出し、マウント時（URL からの初期復元）はスキップする。
-  const prevDebouncedSearch = useRef(debouncedSearch);
-  useEffect(() => {
-    if (prevDebouncedSearch.current === debouncedSearch) return;
-    prevDebouncedSearch.current = debouncedSearch;
-    navigate({ search: (prev) => ({ ...prev, page: 1 }), replace: true });
-  }, [debouncedSearch, navigate]);
-
+  // Enter 確定時に search と page=1 を同時にコミットする。trim は URL 書き込み時にのみ行う。
   const setSearchInput = (value: string) => {
-    navigate({ search: (prev) => ({ ...prev, search: value || undefined }), replace: true });
+    const trimmed = value.trim();
+    navigate({ search: (prev) => ({ ...prev, search: trimmed || undefined, page: 1 }) });
   };
 
   const toggleSort = (key: SortKey) => {
@@ -54,12 +42,11 @@ export function useFacilitatorListState(): FacilitatorListState {
         order: key === sort ? (order === 'asc' ? 'desc' : 'asc') : 'asc',
         page: 1,
       }),
-      replace: true,
     });
   };
 
   const setPage = (newPage: number) => {
-    navigate({ search: (prev) => ({ ...prev, page: newPage }), replace: true });
+    navigate({ search: (prev) => ({ ...prev, page: newPage }) });
   };
 
   const query: FacilitatorQuery = {
@@ -67,7 +54,7 @@ export function useFacilitatorListState(): FacilitatorListState {
     limit: PER_PAGE,
     sort,
     order,
-    search: debouncedSearch,
+    search: search,
   };
 
   return {

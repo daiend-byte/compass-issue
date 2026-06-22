@@ -53,9 +53,10 @@ describe('FacilitatorListPage', () => {
       screen.getByRole('searchbox', { name: '名前、ログインIDで検索' }),
       'facilitator_2',
     );
+    await user.keyboard('{Enter}');
 
-    // facilitator_20〜25 の 6 件にしぼられる（デバウンス 300ms + ネットワーク込みで余裕を持たせる）
-    expect(await screen.findByText('先生20', {}, { timeout: 3000 })).toBeInTheDocument();
+    // facilitator_20〜25 の 6 件にしぼられる
+    expect(await screen.findByText('先生20')).toBeInTheDocument();
     await waitFor(() => expect(screen.queryByText('先生01')).not.toBeInTheDocument());
     expect(screen.getByText('6件中 1〜6件を表示')).toBeInTheDocument();
   });
@@ -83,8 +84,9 @@ describe('FacilitatorListPage', () => {
       screen.getByRole('searchbox', { name: '名前、ログインIDで検索' }),
       'zzzznomatch',
     );
+    await user.keyboard('{Enter}');
 
-    expect(await screen.findByText('該当するデータがありません。', {}, { timeout: 3000 })).toBeInTheDocument();
+    expect(await screen.findByText('該当するデータがありません。')).toBeInTheDocument();
   });
 
   it('通信エラー時にダイアログを表示し、リトライで復帰する', async () => {
